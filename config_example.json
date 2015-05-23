@@ -1,0 +1,9 @@
+{
+  "_comment1": "Replace all of the following variables with the bot's details, and rename to config.js",
+  "_comment2": "This is in JSON Format, if you think you messed it up, check out jsonlint.com to validate it :]",
+  "steam": {
+    "bot_username": "replace_with_username",
+    "bot_password": "replace_with_password",
+    "bot_displayname": "replace_with_steamname"
+  }
+}
