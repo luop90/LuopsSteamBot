@@ -16,7 +16,6 @@ var api = require("./api.js");
 var _config = [];
 if(fs.existsSync("./config.json")) {
   _config = JSON.parse(fs.readFileSync("./config.json"));
-  //throwError(true, "Config file found!", "You did set config.json, didnt you?"); Why is this even here? xD
 } else {
   throwError(true, "Config file not found", "Did you remember to rename config_example.json to config.json?");
 }
@@ -28,7 +27,24 @@ bot.logOn({
 });
 
 bot.on("loggedOn", function() {
-  console.log("Bot loaded. :]");
+  console.log("Bot logged in. :]");
   bot.setPersonaState(Steam.EPersonaState.Online); //Set to online.
   bot.setPersonaName(_config.steam.bot_displayname); //Set the name.
+  bot.addFriend("76561198071430088");
+  console.log("Added Luop to friends list!");
+});
+//Hook friend events.
+bot.on("friend", function(source, status) {
+  //Add pending invite.
+  if(status == Steam.EClanRelationship.Invited) {
+    bot.addFriend(source);
+    console.log("Friend "+ source +" added!");
+  }
+  //Log someone removing you from their friends list :'(
+  else if(status == Steam.EFriendRelationship.None) {
+    console.log("Friend " + source + " removed");
+  }
+});
+bot.on("error", function(e) {
+  console.log("Error thrown: " + e);
 });
