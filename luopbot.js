@@ -16,7 +16,7 @@ var api = require("./api.js");
 var _config = [];
 if(fs.existsSync("./config.json")) {
   _config = JSON.parse(fs.readFileSync("./config.json"));
-  throwError(true, "Config file found!", "You did set config.json, didnt you?");
+  //throwError(true, "Config file found!", "You did set config.json, didnt you?"); Why is this even here? xD
 } else {
   throwError(true, "Config file not found", "Did you remember to rename config_example.json to config.json?");
 }
