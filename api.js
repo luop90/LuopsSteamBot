@@ -1,14 +1,12 @@
-/*module.exports = {
-  throwError: function()
-}*/
+
 throwError = function(fatal, error, description) {
   //fatal is a bool, error and description are strings.
   if(fatal) {
-    console.log("Fatal error! The error thrown was: " + error);
-    console.log(description);
-    throw Error("Fatal error thrown! Name: " + error + " Description: " + description);
+    console.log("-------- FATAL ERROR --------");
+    console.log("%s : %s", error, description);
+    process.exit(1);
   } else {
-    console.log("Non-fatal error thrown! The error thrown was: " + error);
-    console.log(description);
+    console.log("-Whoops!- (Non-fatal error)");
+    console.log("%s : %s");
   }
 }
