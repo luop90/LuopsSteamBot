@@ -26,7 +26,7 @@ exports.getChatResponse = function(source, message) {
   var output = "";
   var is_command = ((message.substring(0, 1) == "!") ? true : false);
   var user_access = api.getUserAccessLevel(source);
-  console.log(user_access);
+  //console.log(user_access); //This was for testing.
   if(is_command == true) {
     // This is a command.
     for(command in _commands) {
@@ -44,5 +44,6 @@ exports.getChatResponse = function(source, message) {
 }
 var _commands = [
   new command("!ping", "PONG", PERMISSION.USER),
-  new command("!pong", "PING", PERMISSION.USER)
+  new command("!pong", "PING", PERMISSION.USER),
+  new command("!help", "You have access to: 2 commands: !ping and !pong", PERMISSION.USER)
 ];
