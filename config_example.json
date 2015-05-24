@@ -5,7 +5,8 @@
     "bot_username": "",
     "bot_password": "",
     "bot_displayname": "",
-    "bot_groupid": ""
+    "bot_groupid": "",
+    "bot_welcomemessage": ""
   },
   "server": {
     "apikey": "",
