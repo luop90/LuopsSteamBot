@@ -13,7 +13,8 @@
 var Steam = require("steam");
 var fs = require("fs");
 var http = require("http");
-//var express = require("express");
+var express = require("express");
+var server = new express();
 var api = require("./api.js");
 var Chat = require("./chat_commands.js");
 
@@ -71,8 +72,38 @@ bot.on("message", function(source, message, type, chatter) {
     var reply = Chat.getChatResponse(source, message); //Generate our reply.
     if(reply != "")
       api.sendSteamMessage(bot, source, reply); //Send z message.
-      
+
   } else {
     // wat.
   }
 });
+
+//Set up the server.
+//We want to match (for testing purposes): /?apikey=DCBAC29915216B45838FCDA6FDBA8&type=readyup&steamids=765,765,765&lobbynumber=115664
+server.get("/", function(req, res)) {
+  //The only thing required for every request is the type and the API key. Other variables are expected depending on the type.
+  var api_key = req.query.apikey;
+  var type = req.query.type;
+  if(api_key != _config.server.apikey) { //Check the API Key.
+    res.send(403); //Give them a 403 error - wrong API key.
+  } else {
+    switch(type) {
+      case "readyup":
+        var steamids = api.parseSteamIds(req.query.steamids);
+        var lobby_number = req.query.lobbynumber;
+        var message = "Lobby #" + lobby_number + " is readying up! https://tf2center.com/lobbies/" + lobby_number;
+
+        break;
+      case "lobbystart":
+        // Ideas: Retrieve server ip & password. Make a steam://connect/<link>/<password> link in the message.
+        var steamids = api.parseSteamIds(req.query.steamids);
+        var lobby_number = req.query.lobbynumber;
+        var message = "Lobby #" + lobby_number + " has started!";
+
+        break;
+      //case "steam+message+annoucement"
+    }
+  }
+  //var steamids = req.query.steamids;
+  //var lobbynumber = req.query.lobbynumber;
+}
