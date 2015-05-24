@@ -61,3 +61,5 @@ exports.getUserAccessLevel = function(source){
   }
   return access;
 }
+///////////////// HTTP Functions /////////////////
+exports.parseSteamIds()
