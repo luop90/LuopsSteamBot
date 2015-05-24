@@ -24,7 +24,7 @@ throwError = function(fatal, error, description) {
 exports.sendSteamMessageAnnoucement = function(bot, accesslevel, message) {
   //Bot is the steambot, accesslevel is an int, message is a string.
   for(user in _users) {
-    if(user.permissions == accesslevel) {
+    if(_users[user.permissions == accesslevel) {
       //Check if access level is what we want. If so, send the annoucement.
       bot.sendMessage(user, message, Steam.EChatEntryType.ChatMsg);
     }
@@ -52,7 +52,7 @@ exports.removeUser = function(user) {
 }
 exports.getUserAccessLevel = function(source){
   //User is the steamid.
-  var access = "unknown";
+  var access = "0"; //If theyre not on the user list, give them access of zero.
   for(var i = 0; i < _users.users.length; i++) {
     //console.log(_users.users[i]);
     if(_users.users[i].SteamID64 == source) {
@@ -62,4 +62,8 @@ exports.getUserAccessLevel = function(source){
   return access;
 }
 ///////////////// HTTP Functions /////////////////
-exports.parseSteamIds()
+exports.parseSteamIds = function(list) {
+  //This function expects all the steamids from the query, seperated by commas.
+  var output = list.split(",");
+  return output;
+}
