@@ -21,16 +21,16 @@ throwError = function(fatal, error, description) {
   }
 }
 ///////////////// Steam Functions /////////////////
-exports.sendSteamMessageAnnoucement = function(bot, accesslevel, message) {
+/*exports.sendSteamMessageAnnoucement = function(bot, accesslevel, message) {
   //Bot is the steambot, accesslevel is an int, message is a string.
   for(user in _users) {
-    if(_users[user.permissions == accesslevel) {
+    if(_users[user.permissions] == accesslevel) {
       //Check if access level is what we want. If so, send the annoucement.
       bot.sendMessage(user, message, Steam.EChatEntryType.ChatMsg);
     }
   }
   console.log("{Message Annoucement} Sent annoucement: %s to user level: %s", message, accesslevel);
-}
+}*/
 exports.sendSteamMessage = function(bot, user, message) {
   // Bot is the steambot, user is the steamid, message is a string.
   var output = message; //Incase we ever want to format this sucka.
