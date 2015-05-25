@@ -1,16 +1,21 @@
 {
   "_comment1": "Replace all of the following variables with the bot's details, and rename to config.js",
   "_comment2": "This is in JSON Format, if you think you messed it up, check out jsonlint.com to validate it :]",
+  "_comment3": "I recommend using randomkey.com to generate the passwords and API keys, to prevent a brute force attack.",
   "steam": {
     "bot_username": "",
     "bot_password": "",
     "bot_displayname": "",
     "bot_groupid": "",
-    "bot_welcomemessage": ""
+    "bot_welcomemessage": "",
+    "bot_endtrademessage": ""
   },
   "server": {
     "apikey": "",
     "hostname": "",
     "port": ""
+  },
+  "donate": {
+    "alertSteamID": ""
   }
 }
