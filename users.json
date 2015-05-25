@@ -1,0 +1,14 @@
+{
+  "_comment": "Use this file to set the permission level of admins. Use SteamID64",
+  "users":
+  [
+    {
+      "SteamID64": "76561198071430088",
+      "permission": "5"
+    },
+    {
+      "SteamID64": "43214321421421143",
+      "permission": "4"
+    }
+  ]
+}
