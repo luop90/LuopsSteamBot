@@ -9,15 +9,15 @@ if(fs.existsSync("./users.json")) {
   throwError(true, "Users file not found.", "Did you delete the users.json file?");
 }
 
-throwError = function(fatal, error, description) {
+exports.throwError = function(fatal, error, description) {
   //fatal is a bool, error and description are strings.
   if(fatal) {
     console.log("-------- FATAL ERROR --------");
     console.log("%s : %s", error, description);
-    process.exit(1);
+    process.exit(1); //Exit with an error code.
   } else {
     console.log("-Whoops!- (Non-fatal error)");
-    console.log("%s : %s");
+    console.log("%s : %s", error, description);
   }
 }
 ///////////////// Steam Functions /////////////////
@@ -60,6 +60,27 @@ exports.getUserAccessLevel = function(source){
     }
   }
   return access;
+}
+exports.addDonorToList = function(client, numOfKeys) {
+  // Client is the steam64, numOfKeys is the number of keys they sent in.
+  // I really want to sourcepawn this javascript and do !client :-(
+
+  //Set our variables.
+  var months = numOfKeys / 3;
+  var name = getNameOfClient(client);
+  var message = name +" (" +client+ ") Keys: " +numOfKeys+ " Months: " +months+ "\n";
+
+  //Small check regarding the donor file.
+  var donor_file_exists = ((fs.existsSync("./donors.txt")) ? true : false);
+  if(donor_file_exists)
+    console.log("{Donor Event} Created donor file.");
+
+  //IF EXISTS update ELSE create (Why am I doing mySQL comments?)
+  fs.appendFile("donors.txt", message, function(err) {
+    if(err)
+      throw err; // I too like to live dangeriously.
+    console.log("{Donor Event} Added donor: %s (%s), months: %s", client, name, months);
+  });
 }
 ///////////////// HTTP Functions /////////////////
 exports.parseSteamIds = function(list) {
