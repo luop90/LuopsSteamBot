@@ -45,6 +45,7 @@ exports.getChatResponse = function(source, message) {
 var _commands = [
   new command("!ping", "PONG", PERMISSION.USER),
   new command("!pong", "PING", PERMISSION.USER),
-  new command("!help", "You have access to: 2 commands: !ping and !pong", PERMISSION.USER),
-  new command("!about", "Created by Luop90 using NodeJS.", PERMISSION.USER)
+  new command("!help", "Commands list: !ping, !pong, !about, !help, !status", PERMISSION.USER),
+  new command("!about", "Credits: created for TF2Center by Luop90 using NodeJS. This program is completely open-source, head over to Luop's GitHub if you are intersted in viewing it :-)", PERMISSION.USER),
+  new command("!status", "All systems GREEN! (Message Luop if you know that reference =D)", PERMISSION.USER)
 ];
