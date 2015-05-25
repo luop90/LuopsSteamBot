@@ -1,4 +1,5 @@
 var api = require("./api.js");
+var fs = require("fs");
 
 var PERMISSION = {
   "USER": 0,
@@ -42,10 +43,37 @@ exports.getChatResponse = function(source, message) {
   }
   return output;
 }
+
+getNewDonors = function() {
+  var count = 0;
+  var output;
+  var file = [];
+  if(fs.existsSync("./donors.txt")) {
+    file = fs.readFile("./donors.txt");
+  } else {
+    api.throwError(false, "Donor File Missing", "donors.txt could not be found. Has no one donated? :-(");
+  }
+  //Go through the lines of 'file' here.
+
+  //Format our return string.
+  if(count == 1) //Lets, idk, make this proper grammar or something. (Why is zero plural in this language of England? xD)
+    output = "There is currently " + count + " new donor.";
+  else
+    output = "There are currently " + count + " new donors.";
+
+  return output;
+}
+get8ballResult = function() {
+  var answers = ["Yes", "It is decidely so", "It is certain", "Without a doubt", "You may rely on it", "As I see it, yes", "Most likely", "MasterNoob says yes.", "Better not tell you now", "My reply is no", "My sources say no", "No", "Very doubtful", "Don't count on it.", "GabeN says no.", "When Half-Life 3 comes out, yes."];
+  var random = Math.floor(Math.random() * (15 - 0 + 1) + 0); //The formula: (max - min + 1) + min
+  return answers[random];
+}
 var _commands = [
   new command("!ping", "PONG", PERMISSION.USER),
   new command("!pong", "PING", PERMISSION.USER),
-  new command("!help", "Commands list: !ping, !pong, !about, !help, !status", PERMISSION.USER),
+  new command("!8ball", get8ballResult(), PERMISSION.USER),
+  new command("!help", "Command list: !ping, !pong, !about, !status, !8ball, !help", PERMISSION.USER),
   new command("!about", "Credits: created for TF2Center by Luop90 using NodeJS. This program is completely open-source, head over to Luop's GitHub if you are intersted in viewing it :-)", PERMISSION.USER),
-  new command("!status", "All systems GREEN! (Message Luop if you know that reference =D)", PERMISSION.USER)
+  new command("!status", "All systems GREEN! (Message Luop if you know that reference =D)", PERMISSION.USER),
+  new command("!newdonors", getNewDonors(), PERMISSION.STAFF),
 ];
