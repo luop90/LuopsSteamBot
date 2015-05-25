@@ -116,9 +116,16 @@ trade.on("sessionStart", function(source) {
 trade.on("offerChanged", function(added, item) {
   console.log(item.name);
   console.log(added);
-  if(item.name == "Mann Co. Supply Crate Key") {
+  if(added && item.name == "Mann Co. Supply Crate Key") {
     console.log("They added a key");
     numOfKeys += 1;
+  }
+  else if(!added && item.name == "Mann Co. Supply Crate Key") {
+    console.log("They removed a key");
+    numOfKeys -= 1;
+  }
+  else {
+    console.log("Something else!");
   }
 });
 trade.on("ready", function() {
