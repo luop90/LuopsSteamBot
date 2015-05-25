@@ -116,13 +116,9 @@ trade.on("sessionStart", function(source) {
 trade.on("offerChanged", function(added, item) {
   console.log(item.name);
   console.log(added);
-  if(added && item.name == "Mann Co. Supply Crate Key") {
-    console.log("They added a key");
-    numOfKeys += 1;
-  }
-  else if(!added && item.name == "Mann Co. Supply Crate Key") {
-    console.log("They removed a key");
-    numOfKeys -= 1;
+  if(item.name == "Mann Co. Supply Crate Key") {
+    numOfKeys += added ? 1 : -1; //Added is a bool.
+    console.log("{Trade Event} " + added ? "Key added." : "Key removed.");
   }
   else {
     console.log("Something else!");
