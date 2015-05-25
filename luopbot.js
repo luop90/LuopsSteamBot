@@ -130,7 +130,7 @@ trade.on("ready", function() {
       trade.confirm();
     });
   } else {
-    trade.chatMsg("Cannot ready! Num of Keys is not divisible by 3!");
+    trade.chatMsg("Cannot ready the trade! Num of Keys is not divisible by 3!");
   }
 });
 trade.on("end", function(result) {
