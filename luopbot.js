@@ -11,8 +11,28 @@
 *   - Run the script (node luopbot.js) or, if you installed forever use that. (forever start luopbot.js)
 *   - ???
 *   - Profit!
-* <insert MIT license here>
 *
+The MIT License (MIT)
+
+Copyright (c) 2015 Lucas Henke
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 ************************/
 var Steam = require("steam");
 var fs = require("fs");
@@ -37,7 +57,7 @@ var rl = readline.createInterface({
 if(fs.existsSync("./config.json")) {
   _config = JSON.parse(fs.readFileSync("./config.json"));
 } else {
-  throwError(true, "Config file not found", "Did you remember to rename config_example.json to config.json?");
+  api.throwError(true, "Config file not found", "Did you remember to rename config_example.json to config.json?");
 }
 
 //Create the bot.
@@ -65,8 +85,8 @@ bot.on("sentry",function(sentryHash) {
   });
 });
 bot.on("error", function(e) {
-  if (e.eresult == Steam.EResult.AccountLogonDenied) {
-    // Prompt the user for Steam Gaurd code
+  if (e.eresult == Steam.EResult.AccountLogonDenied) { //Also is Steam Error Code 63.
+    // Prompt the user for Steam Guard code
     rl.question("Steam Guard Code: ", function(code) {
       // Try logging on again
       bot.logOn({
@@ -76,7 +96,7 @@ bot.on("error", function(e) {
       });
     });
   } else {
-    console.log("ERROR: " + e.cause + "|" + e.eresult);
+    console.log("{Bot Status} ERROR: " + e.cause + "|" + e.eresult);
   }
 });
 //Trade stuff.
@@ -84,6 +104,10 @@ var inventory;
 var client;
 var keys;
 var numOfKeys;
+var inTrade;
+var tradeNumber;
+//var tradeNumber2;
+
 bot.on("webSessionId", function(sessionID) {
   console.log("{Bot Status} New session id retrieved: %s", sessionID);
   trade.sessionID = sessionID; //Update this sucka.
@@ -98,6 +122,7 @@ bot.on("webSessionId", function(sessionID) {
 });
 bot.on("tradeProposed", function(tradeID, steamID) {
   console.log("{Trade Event} Trade request from: %s (Trade ID: %s)", steamID, tradeID);
+  //var tradeNumber = tradeID;
   bot.respondToTrade(tradeID, true);
 });
 trade.on("sessionStart", function(source) {
@@ -106,22 +131,28 @@ trade.on("sessionStart", function(source) {
   keys = [];
   numOfKeys = 0;
   client = source;
+  inTrade = true;
 
-  trade.open(client);
-  trade.loadInventory(440, 2, function(inv) {
+  trade.open(client); //Open the trade.
+  console.log("{Trade Event} Opened trade from: %s", client);
+  /*trade.ChatMsg("The trade will be canceled in 120 seconds if it has not been completed by then.");
+  setTimeout(function(){
+    //Need to think out how I'm going to do this.
+  }, 120 * 1000);*/
+  /*trade.loadInventory(440, 2, function(inv) { //This shouldn't be needed.
     inventory = inv;
-    keys = inv.filter(function(item) { return item.name == "Mann Co. Supply Crate Key";});
-  });
+  .  keys = inv.filter(function(item) { return item.name == "Mann Co. Supply Crate Key";});
+  });*/
 });
 trade.on("offerChanged", function(added, item) {
   console.log(item.name);
   console.log(added);
   if(item.name == "Mann Co. Supply Crate Key") {
     numOfKeys += added ? 1 : -1; //Added is a bool.
-    console.log("{Trade Event} " + added ? "Key added." : "Key removed.");
-  }
-  else {
-    console.log("Something else!");
+    console.log("{Trade Event} " + (added ? "Key added." : "Key removed."));
+  } else {
+    trade.ChatMsg("Only keys will get you donation benefits. Any other item given is not counted towards this.");
+    console.log("{Trade Event} Another item was " + (added ? "added" : "removed"));
   }
 });
 trade.on("ready", function() {
@@ -130,12 +161,24 @@ trade.on("ready", function() {
       trade.confirm();
     });
   } else {
-    trade.chatMsg("Cannot ready the trade! Num of Keys is not divisible by 3!");
+    trade.chatMsg("Cannot ready the trade. Number of keys must be divisible by 3.");
   }
 });
 trade.on("end", function(result) {
   console.log("{Trade Event} Trade %s", result);
-  // Parse some shit with keys here. Or something.
+  inTrade = false;
+  //api.sendSteamMessage(bot, client, _config.steam.bot_endtrademessage);
+  if(result == "success") {
+    api.sendSteamMessage(bot, client, _config.steam.bot_endtrademessage);
+    api.addDonorToList(client, numOfKeys);
+    //Lets bug the FUCK out of MasterNoob =D
+    //while(true) { //Okay fine, I'll remove the loop :'(
+    bot.sendMessage(_config.donate.alertSteamID, "A new person has donated! Check donors.txt please =)");
+    //}
+  } else {
+    // Well that was disappoiting.
+    api.sendSteamMessage(bot, client, "Trade was not a success :'( Click 'Invite to Trade' to try again.");
+  }
 });
 
 //Hook friend events.
@@ -143,13 +186,13 @@ bot.on("friend", function(source, status) {
   //Add pending invite
   if(status == Steam.EClanRelationship.Invited) {
     bot.addFriend(source); //Accept the friend request.
-    api.addUser(source, 0); //Add steamid to the user list.
+    //api.addUser(source, 0); //Add steamid to the user list.
     api.sendSteamMessage(bot, source, _config.steam.bot_welcomemessage);
     console.log("{Friend Event} Added %s to friends list.", source);
   }
   //Log someone removing the bot from their friends list :'(
   else if(status == Steam.EFriendRelationship.None) {
-    api.removeUser(source); //Remove steamid from the user list.
+    //api.removeUser(source); //Remove steamid from the user list.
     console.log("{Friend Event} %s removed from friends list.", source);
   }
   else {
@@ -171,7 +214,6 @@ bot.on("message", function(source, message, type, chatter) {
 - To Ready UP: /?apikey=DCBAC29915216B45838FCDA6FDBA8&type=readyup&steamids=76561198071430088&lobbynumber=115664
 - To Start Lobby: /?apikey=DCBAC29915216B45838FCDA6FDBA8&type=lobbystart&steamids=76561198071430088&lobbynumber=115664&serverinfo=127.0.0.1:27015&password=luoprocks
 - To send a message annoucement (Not ready yet!): /?apikey=DCBAC29915216B45838FCDA6FDBA8&type=messageannoucement&message=luop+is+the+besterest+person&accesslevel=0
-
 */
 app.get("/", function(req, res) {
   //The only thing required for every request is the type and the API key. Other variables are expected depending on the type.
@@ -179,6 +221,7 @@ app.get("/", function(req, res) {
   var type = req.query.type;
   console.log("{Query Event} New query: ");
   console.log(req.query);
+  //res.sendStatus(100); //The query has been recieved.
   //res.send(req.query);
   //return;
 
@@ -204,14 +247,17 @@ app.get("/", function(req, res) {
         res.sendStatus(200);
         console.log("{Query Event} Query successful.");
         break;
+
       case "lobbystart":
         //Variables.
         var steamids = api.parseSteamIds(req.query.steamids);
         var lobby_number = req.query.lobbynumber;
         var server_address = req.query.serverinfo;
         var server_password = req.query.password;
+
         //Format message.
         var message = "Lobby #" + lobby_number + " has started! steam://connect/" + server_address + "/" + server_password;
+
         //Send the message.
         for(steamid in steamids) {
           api.sendSteamMessage(bot, steamids[steamid], message);
@@ -232,5 +278,5 @@ var _hostname = _config.server.hostname;
 var server = app.listen(_port, _hostname, function() {
   var host = server.address().address;
   var port = server.address().port;
-  console.log("{Bot Event} Server set up on  %s:%s", host, port);
+  console.log("{Bot Status} Server set up on %s:%s", host, port);
 });
