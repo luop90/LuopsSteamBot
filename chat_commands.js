@@ -45,5 +45,6 @@ exports.getChatResponse = function(source, message) {
 var _commands = [
   new command("!ping", "PONG", PERMISSION.USER),
   new command("!pong", "PING", PERMISSION.USER),
-  new command("!help", "You have access to: 2 commands: !ping and !pong", PERMISSION.USER)
+  new command("!help", "You have access to: 2 commands: !ping and !pong", PERMISSION.USER),
+  new command("!about", "Created by Luop90 using NodeJS.", PERMISSION.USER)
 ];
