@@ -27,17 +27,22 @@ exports.getChatResponse = function(source, message) {
   var output = "";
   var is_command = ((message.substring(0, 1) == "!") ? true : false);
   var user_access = api.getUserAccessLevel(source);
+  message = message.toLowerCase().trim(); //Test this when I run the bot - might not work
   //console.log(user_access); //This was for testing.
   if(is_command == true) {
     // This is a command.
     for(command in _commands) {
-      if(message.toLowerCase().trim() == _commands[command].trigger) {
+      if(message == _commands[command].trigger) {
         if(user_access >= _commands[command].access) {
           output = _commands[command].output;
         } else {
           output = "You do not have access to this command. (Access level needed: " + _commands[command].access + " | Current access level: " + user_access + ")";
         }
         // Imma just pretend that, I, idk, didnt derp this up real bad :ph34r:
+      }
+      else if (message == "!8ball") {
+        output = get8ballResult();
+        //Have to do special things with the 8ball function. It's weird otherwise.
       }
     }
   }
@@ -47,7 +52,7 @@ exports.getChatResponse = function(source, message) {
 var _commands = [
   new command("!ping", "PONG", PERMISSION.USER),
   new command("!pong", "PING", PERMISSION.USER),
-  new command("!8ball", get8ballResult(), PERMISSION.USER),
+  //new command("!8ball", get8ballResult(), PERMISSION.USER),
   new command("!help", "Command list: !ping, !pong, !about, !status, !8ball, !help", PERMISSION.USER),
   new command("!about", "Credits: created for TF2Center by Luop90 using NodeJS. This program is completely open-source, head over to Luop's GitHub if you are intersted in viewing it :-)", PERMISSION.USER),
   new command("!status", "All systems GREEN! (Message Luop if you know that reference =D)", PERMISSION.USER),
