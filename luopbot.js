@@ -99,6 +99,7 @@ bot.on("error", function(e) {
     console.log("{Bot Status} ERROR: " + e.cause + "|" + e.eresult);
   }
 });
+
 //Trade stuff.
 var inventory;
 var client;
@@ -106,14 +107,12 @@ var keys;
 var numOfKeys;
 var inTrade;
 var tradeNumber;
-//var tradeNumber2;
+var trade_timer;
 
 bot.on("webSessionId", function(sessionID) {
   console.log("{Bot Status} New session id retrieved: %s", sessionID);
   trade.sessionID = sessionID; //Update this sucka.
   bot.webLogOn(function(cookies) {
-    //_cookies = cookies;
-    //console.log(_cookies);
     console.log("{Bot Status} Got a new cookie (NOM NOM): %s", cookies);
     cookies.forEach(function(cookie) {
       trade.setCookie(cookie);
@@ -122,7 +121,7 @@ bot.on("webSessionId", function(sessionID) {
 });
 bot.on("tradeProposed", function(tradeID, steamID) {
   console.log("{Trade Event} Trade request from: %s (Trade ID: %s)", steamID, tradeID);
-  //var tradeNumber = tradeID;
+  var tradeNumber = tradeID;
   bot.respondToTrade(tradeID, true);
 });
 trade.on("sessionStart", function(source) {
@@ -135,17 +134,17 @@ trade.on("sessionStart", function(source) {
 
   trade.open(client); //Open the trade.
   console.log("{Trade Event} Opened trade from: %s", client);
-  /*trade.ChatMsg("The trade will be canceled in 120 seconds if it has not been completed by then.");
-  setTimeout(function(){
-    //Need to think out how I'm going to do this.
-  }, 120 * 1000);*/
-  /*trade.loadInventory(440, 2, function(inv) { //This shouldn't be needed.
-    inventory = inv;
-  .  keys = inv.filter(function(item) { return item.name == "Mann Co. Supply Crate Key";});
-  });*/
+  bot.setPersonaState(Steam.EPersonaState.Busy); //Set to busy.
+
+  //Set up our timer.
+  trade.ChatMsg("The trade will be canceled in 120 seconds if it has not been completed by then.");
+  trade_timer = setTimeout(function() {
+    trade.ChatMsg("The trade took too long. Canceling...");
+    trade.cancel();
+  }, 120 * 1000); //2 minutes in milliseconds.
 });
 trade.on("offerChanged", function(added, item) {
-  console.log(item.name);
+  console.log(item.name); //will be removed once testing is over.
   console.log(added);
   if(item.name == "Mann Co. Supply Crate Key") {
     numOfKeys += added ? 1 : -1; //Added is a bool.
@@ -167,14 +166,13 @@ trade.on("ready", function() {
 trade.on("end", function(result) {
   console.log("{Trade Event} Trade %s", result);
   inTrade = false;
+  bot.setPersonaState(Steam.EPersonaState.Online); //Set back to online.
+  clearTimeout(trade_timer);
   //api.sendSteamMessage(bot, client, _config.steam.bot_endtrademessage);
   if(result == "success") {
     api.sendSteamMessage(bot, client, _config.steam.bot_endtrademessage);
     api.addDonorToList(client, numOfKeys);
-    //Lets bug the FUCK out of MasterNoob =D
-    //while(true) { //Okay fine, I'll remove the loop :'(
-    bot.sendMessage(_config.donate.alertSteamID, "A new person has donated! Check donors.txt please =)");
-    //}
+    api.sendSteamMessage(bot, _config.donate.alertSteamID, "A new person has donated! Check donors.txt please =)");
   } else {
     // Well that was disappoiting.
     api.sendSteamMessage(bot, client, "Trade was not a success :'( Click 'Invite to Trade' to try again.");
