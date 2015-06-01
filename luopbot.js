@@ -84,6 +84,10 @@ bot.on("sentry",function(sentryHash) {
     }
   });
 });
+bot.on("servers", function(servers) {
+  // Update the servers file, that way we never fail to login.
+  fs.writeFile("servers", JSON.stringify(servers));
+});
 bot.on("error", function(e) {
   if (e.eresult == Steam.EResult.AccountLogonDenied) { //Also is Steam Error Code 63.
     // Prompt the user for Steam Guard code
@@ -264,10 +268,15 @@ app.get("/", function(req, res) {
         res.sendStatus(200);
         console.log("{Query Event} Query successful.");
         break;
-      /*case "messageannoucement"
-
-        res.send(200);
-        break;*/
+      case "addfriend":
+        var steamids = api.parseSteamIds(req.query.steamids);
+        for(steamid in steamids) {
+          bot.removeFriend(steamids[steamid]);
+          bot.addFriend(steamids[steamid]); //Accept the friend request.
+          console.log("{Friend Event} Added %s to friends list.", steamids[steamid]);
+        }
+        res.sendStatus(200);
+        break;
     }
   }
 });
