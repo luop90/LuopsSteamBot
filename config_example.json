@@ -1,7 +1,7 @@
 {
   "_comment1": "Replace all of the following variables with the bot's details, and rename to config.js",
   "_comment2": "This is in JSON Format, if you think you messed it up, check out jsonlint.com to validate it :]",
-  "_comment3": "I recommend using randomkey.com to generate the passwords and API keys, to prevent a brute force attack.",
+  "_comment3": "I recommend using randomkeygen.com to generate the passwords and API keys, to prevent a brute force attack.",
   "steam": {
     "bot_username": "",
     "bot_password": "",
