@@ -1,0 +1,4 @@
+*.txt
+*.sentry
+config.json
+users.json
