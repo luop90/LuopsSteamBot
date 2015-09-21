@@ -233,6 +233,8 @@ class MsgClientChatEnter<EMsg::ClientChatEnter>
 	byte chatFlags;
 
 	EChatRoomEnterResponse enterResponse;
+
+	int numMembers;
 };
 
 class MsgClientChatMsg<EMsg::ClientChatMsg>
@@ -261,6 +263,12 @@ class MsgClientChatActionResult<EMsg::ClientChatActionResult>
 	steamidmarshal ulong steamIdUserActedOn;
 	EChatAction chatAction;
 	EChatActionResult actionResult;
+};
+
+class MsgClientChatRoomInfo<EMsg::ClientChatRoomInfo>
+{
+	steamidmarshal ulong steamIdChat;
+	EChatInfoType type;	
 };
 
 class MsgClientGetNumberOfCurrentPlayers<EMsg::ClientGetNumberOfCurrentPlayers>
